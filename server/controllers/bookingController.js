@@ -33,6 +33,13 @@ const createBooking = async (req, res, next) => {
       throw new Error('Expert not found');
     }
 
+    // Validate that the requested date and slot are available for this expert
+    const availableDate = expert.availableSlots.find(s => s.date === date);
+    if (!availableDate || !availableDate.slots.includes(slot)) {
+      res.status(400);
+      throw new Error('Requested date or slot is not available for this expert');
+    }
+
     // Try to create the booking (Database compound index handles race conditions/double booking)
     const booking = await Booking.create({
       expertId,
@@ -72,10 +79,10 @@ const getBookings = async (req, res, next) => {
       throw new Error('Email is required to fetch bookings');
     }
 
-    const searchEmail = email.trim();
+    const searchEmail = email.trim().toLowerCase();
 
     const bookings = await Booking.find({ 
-      userEmail: { $regex: new RegExp(`^${searchEmail}$`, 'i') } 
+      userEmail: searchEmail
     })
       .populate('expertId', 'name category')
       .sort({ createdAt: -1 });
@@ -86,35 +93,7 @@ const getBookings = async (req, res, next) => {
   }
 };
 
-// @desc    Update booking status
-// @route   PATCH /api/bookings/:id/status
-// @access  Public
-const updateBookingStatus = async (req, res, next) => {
-  try {
-    const { status } = req.body;
-    const booking = await Booking.findById(req.params.id);
-
-    if (!booking) {
-      res.status(404);
-      throw new Error('Booking not found');
-    }
-
-    if (!['Pending', 'Confirmed', 'Completed', 'Cancelled'].includes(status)) {
-      res.status(400);
-      throw new Error('Invalid status');
-    }
-
-    booking.status = status;
-    const updatedBooking = await booking.save();
-
-    res.json(updatedBooking);
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   createBooking,
   getBookings,
-  updateBookingStatus,
 };

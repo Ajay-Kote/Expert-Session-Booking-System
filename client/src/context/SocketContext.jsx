@@ -13,7 +13,8 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // Connect to the Socket.io server
     // Allowing fallback to polling fixes connection issues on some environments
-    const newSocket = io(window.location.hostname === 'localhost' ? 'http://localhost:5000' : '/', {
+    const SOCKET_URL = import.meta.env.PROD ? '/' : 'http://localhost:5000';
+    const newSocket = io(SOCKET_URL, {
       reconnectionDelay: 1000,
       reconnection: true,
     });
