@@ -1,6 +1,6 @@
 # Real-Time Expert Session Booking System
 
-![Project Banner](https://via.placeholder.com/1200x400?text=Expert+Session+Booking+System)
+![Project Banner]([https://via.placeholder.com/1200x400?text=Expert+Session+Booking+System](https://expert-session-booking-system-frontend-wo1f.onrender.com/))
 
 A comprehensive, full-stack web application designed to connect users with industry experts. This platform enables users to seamlessly discover experts, view their real-time availability, and securely book 1-on-1 sessions.
 
